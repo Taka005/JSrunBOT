@@ -11,4 +11,4 @@ discordでJSを実行するBOT
 - JSrunBOTのフォルダの中でコマンドプロンプトを立ち上げる
 - `node index.js`を実行し起動するまで待つ
 - 起動したらBOTを自分のサーバーに追加する
-- >>exec message.reply("Hello World"); を送ればBOTがJavaScriptを実行して結果が送信されます  
+- \>\>exec message.reply("Hello World"); を送ればBOTがJavaScriptを実行して結果が送信されます  
