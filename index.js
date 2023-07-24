@@ -1,77 +1,57 @@
-require('./structures/message')
-
-const { Client, MessageAttachment, Intents, Formatters } = require('discord.js')
-const path = require('path')
-const pool = require('workerpool').pool(path.join(__dirname, './worker.js'), {
-  workerType: 'process',
-})
-
-const intents =
-  Intents.FLAGS.GUILDS |
-  Intents.FLAGS.GUILD_MESSAGES |
-  Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+const { Client, GatewayIntentBits, Events, Colors } = require("discord.js");
+const fs = require("fs");
+require("dotenv").config();
+const config = require("./config.json"); 
 
 const client = new Client({
-  intents,
-  presence: {
-    activities: [
-      {
-        name: 'JavaScript',
-        type: 'PLAYING',
-      },
-    ],
-  },
-})
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildPresences
+  ]
+});
 
-const codeBlockRegex = /^`{3}(?<language>[a-z]+)\n(?<code>[\s\S]+)\n`{3}$/mu
-const languages = ['js', 'javascript']
-const toMessageOptions = (consoleOutput, result) => {
-  if (consoleOutput.split('\n').length <= 100) {
-    let wrapped = Formatters.codeBlock('js', result.replaceAll('`', '`\u200b'))
-    if (consoleOutput) {
-      wrapped =
-        Formatters.bold('コンソール') +
-        Formatters.codeBlock('js', consoleOutput.replaceAll('`', '`\u200b')) +
-        '\n' +
-        Formatters.bold('結果') +
-        wrapped
+console.log("\x1b[32m*******************************\x1b[39m");
+console.log("\x1b[32m          JSRunBot             \x1b[39m");
+console.log("\x1b[32m        制作: @taka005          \x1b[39m");
+console.log("\x1b[32m https://discord.gg/NEesRdGQwD \x1b[39m");
+console.log("\x1b[32m*******************************\x1b[39m");
+
+client.on(Events.MessageCreate,async(message)=>{
+  if(message.author.bot) return;
+
+  console.log(`\x1b[37m${message.author.tag}: ${message.content}\x1b[39m`);
+
+  if(message.content.startsWith(`${config.prefix}exec`)){
+    if(!config.admin.includes(message.author.id)) return await message.reply("このコマンドは関係者専用です").catch(()=>{});
+    
+    const script = `module.exports = async(message,client)=>{\n  ${message.content.slice(6)}\n}`;
+    try{
+      fs.writeFileSync("./tmp/script.js",script,"utf8");
+      await require("./tmp/script")(message,message.client);
+    }catch(error){
+      await message.reply(`実行中にエラーが発生しました\n\`\`\`js\n${error.stack}\`\`\``).catch(()=>{});
     }
-    if (wrapped.length <= 2000)
-      return { content: wrapped, allowedMentions: { repliedUser: true } }
+    delete require.cache[require.resolve("./tmp/script")];
   }
-  const files = [new MessageAttachment(Buffer.from(result), 'result.txt')]
-  if (consoleOutput)
-    files.unshift(
-      new MessageAttachment(Buffer.from(consoleOutput), 'console.txt')
-    )
-  return {
-    content: '実行結果が長すぎるのでテキストファイルに出力しました。',
-    files,
-  }
-}
+});
 
-client.once('ready', () => console.log('Ready'))
 
-client.on('messageCreate', message => {
-  if (message.author.bot || message.system) return
-  if (!message.content.toLowerCase().startsWith('>run')) return
-  if (!codeBlockRegex.test(message.content))
-    return message.reply('コードを送信してください。').catch(console.error)
+client.login(process.env.BOT_TOKEN)
+  .then(()=>{
+    console.log("\x1b[34mINFO: ログインしました\x1b[39m");
+  })
+  .catch(()=>{
+    console.log("\x1b[31mERROR: ログインできませんでした\x1b[39m");
+    process.exit();
+  })
 
-  const { language, code } = message.content.match(codeBlockRegex)?.groups ?? {}
-  if (!languages.includes(language))
-    return message
-      .reply(`言語識別子が**${languages.join(', ')}**である必要があります。`)
-      .catch(console.error)
+process.on("uncaughtException",async(error)=>{
+  console.log(`\x1b[31m${error.stack}\x1b[39m`);
+});
 
-  pool
-    .exec('run', [code])
-    .timeout(5000)
-    .then(([consoleOutput, result]) =>
-      message.sendDeletable(toMessageOptions(consoleOutput, result))
-    )
-    .catch(error => message.sendDeletable(Formatters.codeBlock('js', error)))
-})
-
-client.login(process.env.TOKEN)
-  .catch(console.error)
+process.on("unhandledRejection",async(error)=>{
+  console.log(`\x1b[31m${error.stack}\x1b[39m`);
+});
