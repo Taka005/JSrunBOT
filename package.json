@@ -1,33 +1,26 @@
 {
   "name": "jsrunbot",
   "version": "1.0.0",
-  "description": "JavascriptをDiscordで実行できます",
+  "description": "DiscordでJSを実行します",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "format": "prettier --write .",
-    "check": "prettier --check ."
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Taka005/JSrunBOT.git"
   },
-  "keywords": [],
-  "author": "Taka005#1203",
-  "license": "MIT",
+  "keywords": [
+    "Taka005"
+  ],
+  "author": "Taka005",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/Taka005/JSrunBOT/issues"
   },
   "homepage": "https://github.com/Taka005/JSrunBOT#readme",
   "dependencies": {
-    "discord.js": "^13.6.0",
-    "vm2": "^3.9.9",
-    "workerpool": "^6.2.0"
-  },
-  "engines": {
-    "node": ">=16.6.0"
-  },
-  "devDependencies": {
-    "prettier": "^2.5.1"
+    "discord.js": "^14.11.0",
+    "dotenv": "^16.3.1"
   }
 }

@@ -4,6 +4,7 @@ discordでJSを実行するBOT
 - BOTのトークンを取得する(調べてね)
 - GitやNode.jsが入っていない人は[Git](https://git-scm.com/download/win)や[Node.js](https://nodejs.org/ja/download)から自分の環境に合わせてインストールしてください。注意:Node.jsはv16以上をインストールしてください
 - プロンプトを起動し`git clone https://github.com/Taka005/JSrunBOT.git`を実行する
+- `npm i`を実行してパッケージをインストールする
 - 実行したディレクトリにJSrunBOTのフォルダがあるので開く
 - example.envを.envに名前を変更する
 - .envの中の`BOT_TOKEN=ボットのトークン`の形で保存する

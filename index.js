@@ -41,10 +41,10 @@ client.on(Events.MessageCreate,async(message)=>{
 
 client.login(process.env.BOT_TOKEN)
   .then(()=>{
-    console.log("\x1b[34mINFO: ログインしました\x1b[39m");
+    console.log("\x1b[34mログインしました\x1b[39m");
   })
   .catch(()=>{
-    console.log("\x1b[31mERROR: ログインできませんでした\x1b[39m");
+    console.log("\x1b[31mログインできませんでした\x1b[39m");
     process.exit();
   })
 
